@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	"./handlers"
+	"github.com/ma-null/NetInterface/handlers"
+	
 	"net/http"
 
 )
