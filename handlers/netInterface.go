@@ -5,7 +5,6 @@ import (
     "github.com/julienschmidt/httprouter"
 	"net/http"
 	"net"
-	
 )
 
 type NetInterface struct {
@@ -15,7 +14,7 @@ type NetInterface struct {
 	MTU       int              `json:"MTU"`
 }
 
-func getInetAddr(netIf net.Interface) ([]string, error) {
+func netInterfaceAddr(netIf net.Interface) ([]string, error) {
 	addrs, err := netIf.Addrs()
 	if err != nil {
 		return []string{}, err
@@ -28,26 +27,22 @@ func getInetAddr(netIf net.Interface) ([]string, error) {
 	return addrIps, nil
 }
 
-func searchNetInterfaceByName(name string) (NetInterface, error) {
-	//add inet_addr
+func GetNetInterfaceInfo(name string) (NetInterface, error) {
 	netIf, err := net.InterfaceByName(name)
 	if err != nil {
 		return NetInterface{}, err
 	} 
 
-	addr, err := getInetAddr(*netIf)
+	addr, err := netInterfaceAddr(*netIf)
 	if err != nil {
 		return NetInterface{}, err
 	} 
-	
-
 	return NetInterface{ 
 		netIf.Name,
 		netIf.HardwareAddr,
 		addr,		
 		netIf.MTU,
 	}, nil
-
 }
 
 func GetInteface(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -57,12 +52,12 @@ func GetInteface(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return	
 	}
 
-	netIf, err := searchNetInterfaceByName(name)
+	netIf, err := GetNetInterfaceInfo(name)
 	if err != nil {
 		http.Error(w, "interface"+name+"was not found", http.StatusInternalServerError) 
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(netIf); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
