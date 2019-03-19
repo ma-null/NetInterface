@@ -7,22 +7,22 @@ import (
 	"net"
 )
 
-type ifResponse struct {
+type IfResponse struct {
 	AllIntr[] string `json:"Interfaces"`
 }
 
 
-func netInterfaceNames() (ifResponse, error) {
+func netInterfaceNames() (IfResponse, error) {
 	myInterfaces, err := net.Interfaces()
 	if err != nil {
-		return ifResponse{}, err
+		return IfResponse{}, err
 	}
 
 	ifNames := make([]string, len(myInterfaces)) 
 	for i := range myInterfaces {
 		ifNames[i] = myInterfaces[i].Name
 	}
-	return ifResponse{ifNames}, nil
+	return IfResponse{ifNames}, nil
 }
 
 

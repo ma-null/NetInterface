@@ -8,7 +8,7 @@ import (
 	
 )
 
-type netInterface struct {
+type NetInterface struct {
 	Name      string           `json:"name"`
 	Hw_addr   net.HardwareAddr `json:"hw_addr"` 
 	Inet_addr []string       `json:"inet_addr"`
@@ -28,20 +28,20 @@ func getInetAddr(netIf net.Interface) ([]string, error) {
 	return addrIps, nil
 }
 
-func searchNetInterfaceByName(name string) (netInterface, error) {
+func searchNetInterfaceByName(name string) (NetInterface, error) {
 	//add inet_addr
 	netIf, err := net.InterfaceByName(name)
 	if err != nil {
-		return netInterface{}, err
+		return NetInterface{}, err
 	} 
 
 	addr, err := getInetAddr(*netIf)
 	if err != nil {
-		return netInterface{}, err
+		return NetInterface{}, err
 	} 
 	
 
-	return netInterface{ 
+	return NetInterface{ 
 		netIf.Name,
 		netIf.HardwareAddr,
 		addr,		

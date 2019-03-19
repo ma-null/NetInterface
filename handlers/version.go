@@ -8,12 +8,12 @@ import (
 
 const ApiVersion = "v1"
 
-type verResponse struct {
+type VerResponse struct {
 	Version string `json:"version"`
 }
 
 func GetVersion(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	ver := verResponse{ApiVersion}
+	ver := VerResponse{ApiVersion}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(ver); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
