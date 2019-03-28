@@ -2,17 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-    "github.com/julienschmidt/httprouter"
+	"fmt"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"net"
 )
 
-type NetInterface struct {
-	Name      string           `json:"name"`
-	Hw_addr   net.HardwareAddr `json:"hw_addr"` 
-	Inet_addr []string       `json:"inet_addr"`
-	MTU       int              `json:"MTU"`
-}
 
 func netInterfaceAddr(netIf net.Interface) ([]string, error) {
 	addrs, err := netIf.Addrs()
@@ -27,40 +22,52 @@ func netInterfaceAddr(netIf net.Interface) ([]string, error) {
 	return addrIps, nil
 }
 
-func GetNetInterfaceInfo(name string) (NetInterface, error) {
-	netIf, err := net.InterfaceByName(name)
+func GetNetInterfaceInfo(mng NetInterfaceManger, name string) (NetInterface, error) {
+	netIf, err := mng.NetInterfaceByName(name)
 	if err != nil {
 		return NetInterface{}, err
-	} 
+	}
 
 	addr, err := netInterfaceAddr(*netIf)
 	if err != nil {
 		return NetInterface{}, err
-	} 
-	return NetInterface{ 
+	}
+	return NetInterface{
 		netIf.Name,
 		netIf.HardwareAddr,
-		addr,		
+		addr,
 		netIf.MTU,
 	}, nil
 }
 
-func GetInteface(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	name := ps.ByName("name")
-	if name == "" {
-		http.Error(w, "name should be set", http.StatusBadRequest) 
-		return	
-	}
+func GetInterface(mng NetInterfaceManger) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+	return func(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
+		fmt.Println("before nameIf")
+		name := ps.ByName("name")
+		if name == "" {
+			http.Error(w, "name should be set", http.StatusBadRequest)
+			return
+		}
 
-	netIf, err := GetNetInterfaceInfo(name)
-	if err != nil {
-		http.Error(w, "interface"+name+"was not found", http.StatusInternalServerError) 
-		return
-	}
+		fmt.Println("before GetInterfaceInfo")
+		netIf, err := GetNetInterfaceInfo(mng, name)
+		if err != nil {
+			http.Error(w, "interface"+name+"was not found", http.StatusInternalServerError)
+			return
+		}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(netIf); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		fmt.Println("before json")
+		w.Header().Set("Content-Type", "application/json")
+		/*
+		data, err := json.Marshal(netIf)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}*/
+		if err = json.NewEncoder(w).Encode(netIf); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			fmt.Printf(err.Error())
+			return
+		}
+		fmt.Println("after GetInterfaceInfo/n")
 	}
 }

@@ -2,17 +2,16 @@ package handlers
 
 import (
 	"encoding/json"
-    "github.com/julienschmidt/httprouter"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"net"
 )
 
 type IfResponse struct {
 	AllIntr[] string `json:"Interfaces"`
 }
 
-func netInterfaceNames() (IfResponse, error) {
-	netIf, err := net.Interfaces()
+func netInterfaceNames(mng NetInterfaceManger) (IfResponse, error) {
+	netIf, err := mng.NetInterfaces()
 	if err != nil {
 		return IfResponse{}, err
 	}
@@ -23,15 +22,18 @@ func netInterfaceNames() (IfResponse, error) {
 	return IfResponse{ifNames}, nil
 }
 
-func GetIntefaces(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	netIf, err := netInterfaceNames()	
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(netIf); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+func GetInterfaces(mng NetInterfaceManger) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+	return func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+		netIf, err := netInterfaceNames(mng)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err = json.NewEncoder(w).Encode(netIf); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
