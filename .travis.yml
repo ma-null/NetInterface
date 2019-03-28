@@ -3,13 +3,13 @@ language: go
 go:
   - 1.12
 
-go_import_path:
-  - github.com/julienschmidt/httprouter
-  - github.com/ma-null/NetInterface/handlers
-
 before_install:
   - cp .netrc ~/.netrc
-  - chmod 600 ~/.netrc
+  - chmod 600 ~/.netrc\
+
+install:
+  - go get github.com/julienschmidt/httprouter
+  - go get github.com/ma-null/NetInterface/handlers
 
 script:
   - go test -v ./...
