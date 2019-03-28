@@ -5,7 +5,6 @@ go:
 
 before_install:
   - cp .netrc ~/.netrc
-  - chmod 600 ~/.netrc\
 
 install:
   - go get github.com/julienschmidt/httprouter
