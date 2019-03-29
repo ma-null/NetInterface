@@ -18,5 +18,4 @@ install:
 script:
   - go test -v ./...
   - go build -v
-  - docker build -t $IMAGE_NAME$5 -f Dockerfile .
-  - docker push $IMAGE_NAME
+  - bash sm-push.sh
