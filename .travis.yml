@@ -2,12 +2,13 @@ language: go
 
 go:
   - 1.12
-  -
 env:
   global:
     - IMAGE_NAME=manuller/netinterfaces
+
 services:
   - docker
+
 before_install:
   - cp .netrc ~/.netrc
 
