@@ -18,4 +18,4 @@ install:
 script:
   - go test -v ./...
   - go build -v
-  - bash sm-push.sh
+  - bash push.sh
