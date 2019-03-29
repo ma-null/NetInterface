@@ -6,6 +6,8 @@ go:
 env:
   global:
     - IMAGE_NAME=manuller/netinterfaces
+services:
+  - docker
 before_install:
   - cp .netrc ~/.netrc
 
@@ -16,5 +18,5 @@ install:
 script:
   - go test -v ./...
   - go build -v
-  - docker build -t $IMAGE_NAME:$5 -t $IMAGE_NAME -f Dockerfile .
+  - docker build -t $IMAGE_NAME$5 -f Dockerfile .
   - docker push $IMAGE_NAME
