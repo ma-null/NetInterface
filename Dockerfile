@@ -5,5 +5,4 @@ WORKDIR /go/src/app
 RUN go get github.com/julienschmidt/httprouter && \
     go get github.com/ma-null/NetInterface
 
-
-CMD ["go",  "run", "server.go"]
+CMD ["/go/bin/NetInterface"]
